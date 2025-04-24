@@ -1,8 +1,10 @@
 package resource;
 
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import model.Siswa;
 import service.SiswaService;
 
@@ -21,8 +23,36 @@ public class SiswaResource {
         return siswaService.getAll();
     }
 
+    @GET
+    @Path("/{id}")
+    public Response getSiswa(@PathParam("id") Long id) {
+        return siswaService.getById(id)
+                .map(siswa -> Response.ok(siswa).build())
+                .orElse(Response.status(Response.Status.NOT_FOUND).build());
+    }
+
     @POST
-    public void addSiswa(Siswa siswa) {
+    @Transactional
+    public Response addSiswa(Siswa siswa) {
         siswaService.add(siswa);
+        return Response.status(Response.Status.CREATED).build();
+    }
+
+    @PUT
+    @Path("/{id}")
+    public Response updateSiswa(@PathParam("id") Long id, Siswa siswa) {
+        boolean updated = siswaService.update(id, siswa);
+        return updated ?
+                Response.ok().build() :
+                Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response deleteSiswa(@PathParam("id") Long id) {
+        boolean deleted = siswaService.delete(id);
+        return deleted ?
+                Response.noContent().build() :
+                Response.status(Response.Status.NOT_FOUND).build();
     }
 }
