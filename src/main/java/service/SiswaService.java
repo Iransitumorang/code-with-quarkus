@@ -15,6 +15,7 @@ public class SiswaService {
     @Inject
     SiswaRepository siswaRepository;
 
+    @Transactional
     public List<Siswa> getAll() {
         return siswaRepository.listAll();
     }
